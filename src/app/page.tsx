@@ -1,58 +1,226 @@
 "use client";
 import { useState, useEffect } from "react";
 
-const PRACTICE_DATA = [
-  "1250 North Mesa Street, El Paso, TX 79902",
-  "Account #8849-2210-9485",
-  "Confirmation: AX-774-901-B",
-  "Idali Cooper | idali.cooper@email.com",
-  "Item: 45x Unity Developer Suite (Ref: 9920)"
-];
+const DATA_MODES = {
+  "Standard Text": ["Alice Vance", "Charlie Delta", "Cleshawn Montegue", "Zeke Miller", 
+    "Aubrey Hawk", "Olivia Millar", "Liam Jackson", "Jasper Whitlock", "Theodora Washington", 
+    "Sienna Von Trapp", "Blanche Reynolds", "Darcy Smith", "Lucy Wong", "Oliver Bullock", "Henry Frankfert", 
+    "Alder Liebowitz", "Fable Samualson", "Alyssa Vasquez", "Wilbur Kentucky", "Makorov Dreyer", "Nacho Bartoromo", 
+    "Kevin Ramage", "Raider Dave","Jeannie Gold", "Ricky Spanish", "Clip Clop", "Sholanda Dykes", "Gilda Bux", "Kevin Bacon", 
+    "Rocherro Ferrero", "Clint McGlint", "Gust Breezer", "Giardia Capitosto", "Rolex Gordini", "Erastus J. Horton", 
+    "Wally Wrobel", "Rudolfo Mayerling", "Dante Octovarius", "A. Poth E. Cary", "Jameson McSmirnoff", "Shebecca Escrow", 
+    "Harriet Bustax", "Sunny Sunderson", "Josay Bosay", "Dimitrus Fitzpatio", "Hugh J. Jeanman", "Gord Gomax",
+     "Bonnie Ramirez", "Jenna D. Evans", "Jordan Edelstien", "Braff Zacklin", "Dom Fikowski", "Maurice Barns", 
+     "Roy R. McFreely", "Sidney Huffman", "Rafael Penguin", "Caitlyn M. Smith", "Juanito Pequeno", "Emmilou Sugarbean", 
+     "Ernest Shlumpel", "Abigail Lemonparty", "Max Jets", "Frankie Carconi", "Alicia Wilkner", "Frank Slade", "Gerald Ya Ya",
+      "Luis Valdez", "Ira Siegal", "Fantasia Lopez", "Abbey Road", "Ace Chapman", "Bing Cooper", "Jenny Fromdabloc", 
+      "Hubert LeGrange", "Chex LeMeneux", "Vince Manaco", "Clive Trotter", "Miles Raymond", "Hershel Hershbaum"],
+  "Alpha-Numeric": ["ID-8849-XJ", "DELL-5520-CP", "UNIT-99-B2", "CONF-AX-774", "ZONE-882-TX", "XU6O4DMFW", "CQ956MOB2", 
+    "ZW32X6NE7", "RHOVGU4AE", "A0CUQPGX4", "AP-7721-L0", "MAC-0012-XT", "LOG-992-K9", "SKU-441-VB", "USER-902-ID", 
+    "NX-882-001", "VT-554-PL3", "BATT-992-X", "GRID-001-A", "LINK-44-Q2", "772-XJ-009", "110-VB-221", "882-PL-551", 
+    "334-QT-990", "551-ZX-112"],
+  "Numeric (10-Key)": ["99283.44", "1002.99", "88271102", "554.20", "00293.11", "1250.79", "4001.00", 
+    "782.11", "9485.22", "1102.93", "88273.11", "90210.44", "5512.90", "112.334", "887.221", "0.00293", 
+    "100.22", "445.99", "1029.33", "7721.90", "99827", "11029", "88273", "55120", "00291"],
+  "Structured Forms": ["Name: Idali | Age: 20", "Qty: 45 | Item: CPU", "Date: 04-11-26", 
+    "Lat: 31.76 | Lon: -106.48", "User: Cooper | ID: 99", "Ref: 882 | Code: XT", 
+    "Type: SSD | Cap: 1TB", "Loc: TX | Zone: 915", "Temp: 98.6 | Status: OK", "Price: 19.99 | Tax: 1.25", 
+    "Job: Dev | Lang: C#", "Env: Unity | Ver: 6.0", "Speed: 45 | Acc: 100", "Mode: 10-Key | Lvl: 10", 
+    "Dog: Husky | Age: 7m", "VSC: Active | Git: Yes"]
+};
+
+type Mode = keyof typeof DATA_MODES;
 
 export default function Home() {
+  const [mode, setMode] = useState<Mode | null>(null);
+  const [level, setLevel] = useState(1);
+  const [levelList, setLevelList] = useState<string[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [userInput, setUserInput] = useState("");
-  const [index, setIndex] = useState(0);
-  const targetText = PRACTICE_DATA[index];
+  const [timeLeft, setTimeLeft] = useState(45);
+  const [gameState, setGameState] = useState("waiting"); 
+  const [errors, setErrors] = useState(0);
+  const [totalChars, setTotalChars] = useState(0);
 
-  // Moves to next item when finished
+  const ERROR_LIMIT = 15;
+  const START_TIME = 45;
+
+  const generateLevelList = (m: Mode) => {
+    const pool = DATA_MODES[m];
+    return [...Array(5)].map(() => pool[Math.floor(Math.random() * pool.length)]);
+  };
+
   useEffect(() => {
-    if (userInput === targetText) {
-      setTimeout(() => {
-        setIndex((prev) => (prev + 1) % PRACTICE_DATA.length);
-        setUserInput("");
-      }, 500); // Short pause for satisfaction!
+    if (mode) setLevelList(generateLevelList(mode));
+  }, [mode, level]);
+
+  // Global Keyboard Listener for Space
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === "Space" && gameState === "waiting" && mode) {
+        e.preventDefault();
+        setGameState("playing");
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [gameState, mode]);
+
+  // Main Timer Logic
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (gameState === "playing" && timeLeft > 0) {
+      timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
+    } else if (timeLeft <= 0 && gameState === "playing") {
+      setGameState("gameover");
     }
-  }, [userInput, targetText]);
+    return () => clearInterval(timer);
+  }, [gameState, timeLeft]);
+
+  // Check for Error Limit instantly
+  useEffect(() => {
+    if (errors >= ERROR_LIMIT && gameState === "playing") {
+      setGameState("gameover");
+    }
+  }, [errors, gameState]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (gameState !== "playing") return;
+    
+    const value = e.target.value;
+    const target = levelList[currentIndex];
+    if (value.length > target.length) return;
+
+    const lastIdx = value.length - 1;
+    if (value[lastIdx] !== target[lastIdx]) {
+      setErrors(prev => prev + 1);
+    } else {
+      setTotalChars(prev => prev + 1);
+    }
+    setUserInput(value);
+
+    if (value.length === target.length) {
+      setTimeout(() => {
+        if (currentIndex < levelList.length - 1) {
+          setCurrentIndex(prev => prev + 1);
+          setUserInput("");
+        } else {
+          if (level < 10) {
+            setLevel(prev => prev + 1);
+            setCurrentIndex(0);
+            setUserInput("");
+            setTimeLeft(prev => prev + 15);
+          } else {
+            setGameState("victory");
+          }
+        }
+      }, 150);
+    }
+  };
+
+  // Grade Calculation
+  const getGrade = (wpm: number, errs: number) => {
+    if (errs >= ERROR_LIMIT) return { label: "F", color: "text-red-600" };
+    if (wpm > 50 && errs < 3) return { label: "A+", color: "text-yellow-400" };
+    if (wpm > 40 && errs < 6) return { label: "A", color: "text-emerald-400" };
+    if (wpm > 30 && errs < 9) return { label: "B", color: "text-blue-400" };
+    if (wpm > 20) return { label: "C", color: "text-orange-400" };
+    return { label: "D", color: "text-zinc-500" };
+  };
+
+  const restart = () => {
+    setMode(null); setLevel(1); setCurrentIndex(0); setUserInput("");
+    setTimeLeft(START_TIME); setErrors(0); setTotalChars(0); setGameState("waiting");
+  };
+
+  const timeActive = (START_TIME + ((level - 1) * 15)) - timeLeft;
+  const kpm = timeActive > 0 ? Math.round((totalChars / timeActive) * 60) : 0;
+  const wpm = Math.round(kpm / 5);
+  const grade = getGrade(wpm, errors);
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-6">
-      <h1 className="text-3xl font-bold mb-8 text-blue-400">Data Entry Trainer</h1>
-      
-      <div className="bg-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-2xl border border-gray-700">
-        <p className="text-sm uppercase tracking-widest text-gray-500 mb-2">Target Data:</p>
-        <p className="text-2xl mb-6 font-mono text-white bg-black/30 p-4 rounded border border-gray-600">
-          {targetText}
-        </p>
+    <main className="flex flex-col items-center justify-center min-h-screen bg-zinc-950 text-white p-4">
+      <div className="w-full max-w-3xl bg-zinc-900 border border-white/5 rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden">
+        
+        {/* End Screen (Victory or Game Over) */}
+        {(gameState === "gameover" || gameState === "victory") && (
+          <div className="absolute inset-0 bg-black/95 z-50 flex flex-col items-center justify-center rounded-[2.5rem] p-10">
+            <h2 className={`text-6xl font-black mb-4 ${gameState === 'victory' ? 'text-emerald-500' : 'text-red-600'}`}>
+              {gameState === 'victory' ? 'CERTIFIED' : 'FAILED'}
+            </h2>
+            <div className="text-8xl font-black mb-8 font-mono bg-white/5 w-32 h-32 flex items-center justify-center rounded-full border border-white/10">
+              <span className={grade.color}>{grade.label}</span>
+            </div>
+            <div className="grid grid-cols-3 gap-8 mb-10 text-center font-mono">
+              <div><p className="text-zinc-500 text-[10px] mb-1">SPEED</p><p className="text-xl">{wpm} WPM</p></div>
+              <div><p className="text-zinc-500 text-[10px] mb-1">ERRORS</p><p className="text-xl text-red-500">{errors}</p></div>
+              <div><p className="text-zinc-500 text-[10px] mb-1">LEVEL</p><p className="text-xl">{level}</p></div>
+            </div>
+            <button onClick={restart} className="bg-white text-black px-12 py-4 rounded-full font-black tracking-widest hover:bg-yellow-500 transition-all">MAIN MENU</button>
+          </div>
+        )}
 
-        <input
-          type="text"
-          autoFocus
-          className={`w-full p-4 rounded bg-gray-700 border-2 transition-colors duration-200 text-xl font-mono focus:outline-none ${
-            userInput === targetText.substring(0, userInput.length) 
-            ? "border-blue-500 focus:border-green-400" 
-            : "border-red-500 bg-red-900/20"
-          }`}
-          placeholder="Type precisely..."
-          value={userInput}
-          onChange={(e) => setUserInput(e.target.value)}
-        />
+        {/* Start Overlay */}
+        {gameState === "waiting" && mode && (
+          <div className="absolute inset-0 bg-black/80 z-30 flex flex-col items-center justify-center rounded-[2.5rem] backdrop-blur-sm">
+            <p className="text-white text-2xl font-mono animate-pulse uppercase tracking-widest">Press SPACE to Start</p>
+          </div>
+        )}
 
-        <div className="mt-6 flex justify-between items-center font-mono">
-          <p className={userInput === targetText.substring(0, userInput.length) ? "text-green-400" : "text-red-400 font-bold"}>
-            {userInput === targetText.substring(0, userInput.length) ? "✓ Keeping Pace" : "⚠ TYPO DETECTED"}
-          </p>
-          <p className="text-gray-500 italic">Progress: {index + 1} / {PRACTICE_DATA.length}</p>
+        {/* HUD */}
+        <div className="flex justify-between items-center mb-10">
+          <div className="text-[10px] font-black text-zinc-500 tracking-[0.3em] uppercase">{mode || "Select Mode"}</div>
+          <div className="flex gap-4 items-center">
+            <div className="text-emerald-500 font-mono text-sm">{wpm} WPM</div>
+            <div className={`font-mono text-sm px-4 py-1 rounded-full border ${errors >= 12 ? 'border-red-500 text-red-500 animate-pulse' : 'border-zinc-700 text-zinc-500'}`}>
+              STRIKES: {errors}/{ERROR_LIMIT}
+            </div>
+          </div>
         </div>
+
+        {/* Menu Selection */}
+        {!mode ? (
+           <div className="grid grid-cols-2 gap-4 mt-4">
+           {Object.keys(DATA_MODES).map((m) => (
+             <button key={m} onClick={() => setMode(m as Mode)} className="bg-zinc-800/50 border border-white/5 p-6 rounded-2xl hover:border-yellow-500 transition-all text-left">
+               <h3 className="font-bold text-lg">{m}</h3>
+               <p className="text-[10px] text-zinc-500 mt-1">Accuracy Mode</p>
+             </button>
+           ))}
+         </div>
+        ) : (
+          <>
+            <div className="flex gap-2 mb-8">
+              {levelList.map((_, i) => (
+                <div key={i} className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${i < currentIndex ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]' : i === currentIndex ? 'bg-yellow-500' : 'bg-zinc-800'}`} />
+              ))}
+            </div>
+
+            <div className="text-center mb-12">
+              <p className="text-xs text-zinc-600 uppercase mb-4 tracking-widest font-bold">Level {level} of 10</p>
+              <div className="text-4xl font-mono tracking-tighter leading-relaxed">
+                {levelList[currentIndex]?.split("").map((char, i) => {
+                  let color = "text-zinc-700";
+                  if (i < userInput.length) color = userInput[i] === char ? "text-emerald-400" : "text-red-500 underline decoration-2 offset-4";
+                  return <span key={i} className={color}>{char}</span>;
+                })}
+              </div>
+            </div>
+
+            <input
+              autoFocus
+              onKeyDown={(e) => { if (e.key === 'Backspace') e.preventDefault(); }}
+              className="w-full bg-black/20 border-2 border-white/5 rounded-2xl p-6 text-2xl font-mono text-center focus:outline-none focus:border-yellow-500 transition-all"
+              value={userInput}
+              onChange={handleInputChange}
+              placeholder="..."
+            />
+            
+            <div className="mt-8 text-center font-mono text-zinc-500 text-sm">
+              {timeLeft}s remaining
+            </div>
+          </>
+        )}
       </div>
     </main>
   );
