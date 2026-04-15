@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -15,11 +16,18 @@ export default function ProfilePage() {
     <div className="bg-slate-50 min-h-screen font-sans text-slate-900">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md flex items-center justify-between px-8 py-4 border-b border-slate-200">
-        <span className="text-2xl font-bold tracking-tight text-blue-800">FOKEL Academy</span>
-        <div className="h-10 w-10 rounded-full bg-blue-800 flex items-center justify-center text-white font-bold">
-          AJ
+        <div className="flex items-center gap-8">
+            <span className="text-2xl font-bold tracking-tight text-blue-800">FOKEL Academy</span>
+            <div className="flex items-center gap-6 ml-4">
+                <Link href="/" className="text-sm font-bold text-slate-500 hover:text-blue-800">TRAINER</Link>
+                <Link href="/profile" className="text-sm font-bold text-blue-800">PROFILE</Link>
+                <Link href="/dashboard" className="text-sm font-bold text-slate-500 hover:text-blue-800">DASHBOARD</Link>
+            </div>
         </div>
-      </nav>
+  <div className="h-10 w-10 rounded-full bg-blue-800 flex items-center justify-center text-white font-bold">
+    AJ
+  </div>
+</nav>
 
       {/* Sidebar */}
       <aside className="h-screen w-64 fixed left-0 top-0 bg-slate-100 flex flex-col p-4 gap-2 pt-24 border-r border-slate-200">
