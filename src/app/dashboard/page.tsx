@@ -72,7 +72,7 @@ export default function TeacherDashboard() {
                 <h3 className="text-2xl font-bold mb-8">Schedule Timed Test</h3>
                 <div className="p-4 bg-slate-800 rounded-lg border border-slate-700 flex justify-between items-center">
                   <p className="font-bold">Duration Settings</p>
-                  <span className="text-xl font-black">45 MIN</span>
+                  <span className="text-xl font-black">3 MIN</span>
                 </div>
                 <button className="w-full mt-12 bg-white text-slate-900 py-3 rounded-lg font-bold hover:bg-slate-100">
                   Initialize Test Engine
