@@ -99,10 +99,20 @@ export default function Home() {
     setTimeLeft(START_TIME); setErrors(0); setTotalChars(0); setGameState("waiting");
   };
 
+  // Math for CPM
   const timeActive = (START_TIME + ((level - 1) * 15)) - timeLeft;
-  const kpm = timeActive > 0 ? Math.round((totalChars / timeActive) * 60) : 0;
-  const wpm = Math.round(kpm / 5);
-  const grade = (wpm > 40 && errors < 6) ? { label: "A", color: "text-emerald-400" } : { label: "C", color: "text-orange-400" };
+  const cpm = timeActive > 0 ? Math.round((totalChars / timeActive) * 60) : 0;
+
+  // Professional Grading: A is 200+ CPM (roughly 40 WPM)
+  const grade = (cpm > 200 && errors < 6) 
+    ? { label: "A", color: "text-emerald-400", message: "WELL DONE!"  } 
+    : (cpm > 150 && errors < 8) 
+    ? { label: "B", color: "text-blue-400", message: "KEEP GOING!" } 
+    : (cpm > 100 && errors < 12)
+    ? { label: "C", color: "text-orange-400", message: "YOU PASSED!"}
+    : (cpm > 50 && errors < 15)
+    ? {label: "D", color: "text-yellow-600", message: "KEEP IT UP!"}
+    : { label: "F", color: "text-red-500", message: "FAILED"};
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-zinc-950 text-white p-4">
@@ -110,7 +120,7 @@ export default function Home() {
       <nav className="mb-8 flex items-center gap-8 bg-zinc-900 px-8 py-3 rounded-full border border-white/5">
         <Link href="/" className="text-sm font-black text-yellow-500 hover:text-white transition-colors">TRAINER</Link>
         <Link href="/profile" className="text-sm font-black text-zinc-500 hover:text-white transition-colors">PROFILE</Link>
-        <Link href="/dashboard" className="text-sm font-black text-zinc-500 hover:text-white transition-colors">DASHBOARD</Link>
+        <Link href="/" className="text-sm font-black text-zinc-500 hover:text-white transition-colors">HOME</Link>
       </nav>
 
       <div className="w-full max-w-3xl bg-zinc-900 border border-white/5 rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden">
@@ -136,7 +146,7 @@ export default function Home() {
         <div className="flex justify-between items-center mb-10">
           <div className="text-[10px] font-black text-zinc-500 tracking-[0.3em] uppercase">{mode || "Select Mode"}</div>
           <div className="flex gap-4 items-center">
-            <div className="text-emerald-500 font-mono text-sm">{wpm} WPM</div>
+            <div className="text-emerald-500 font-mono text-sm">{cpm} CPM</div>
             <div className={`font-mono text-sm px-4 py-1 rounded-full border ${errors >= 12 ? 'border-red-500 text-red-500 animate-pulse' : 'border-zinc-700 text-zinc-500'}`}>
               STRIKES: {errors}/{ERROR_LIMIT}
             </div>
