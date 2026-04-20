@@ -32,25 +32,10 @@ export default function RootLayout(
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        {/* The Nav and Main must be INSIDE the body tags */}
-        <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md flex items-center justify-between px-8 py-4 border-b border-slate-200">
-          <div className="flex items-center gap-8">
-            <span className="text-2xl font-bold tracking-tight text-blue-800">FOKEL Academy</span>
-            <div className="flex items-center gap-6 ml-4">
-              <Link href="/" className="text-sm font-bold text-slate-500 hover:text-blue-800">HOME</Link>
-              <Link href="/assignments" className="text-sm font-bold text-slate-500 hover:text-blue-800">ASSIGNMENTS</Link>
-              <Link href="/tests" className="text-sm font-bold text-slate-500 hover:text-blue-800">TESTS</Link>
-              <Link href="/profile" className="text-sm font-bold text-slate-500 hover:text-blue-800">PROFILE</Link>
-              <Link href="/dashboard" className="text-sm font-bold text-slate-500 hover:text-blue-800">DASHBOARD</Link>
-            </div>
-          </div>
-        </nav>
-
-        <main className="pt-20">
-          {children}
-        </main>
         
+     <body className="min-h-full bg-slate-50">
+        {/* We removed the Nav from here so it doesn't show on the Login page */}     
+          {children}
       </body> 
     </html>
   );

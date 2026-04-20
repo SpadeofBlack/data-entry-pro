@@ -4,13 +4,20 @@ import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
-  const [accountType, setAccountType] = useState("student");
+  const [accountType, setAccountType] = useState("student"); // This tracks the dropdown
   const router = useRouter();
 
   const handleAuth = (e: React.FormEvent) => {
     e.preventDefault();
-    // After "logging in", send them to your trainer
-    router.push("/"); 
+    
+    // Save the choice to localStorage so other pages can check it
+    localStorage.setItem('userRole', accountType);
+
+    if (accountType === "teacher") {
+      router.push("/dashboard"); // Teachers go to the Workspace
+    } else {
+      router.push("/"); // Students go to the Landing Page/Trainer
+    }
   };
 
   return (
@@ -37,6 +44,16 @@ export default function LoginPage() {
         <p className="text-slate-500 text-sm mb-6">Access the FOKELGate Archive.</p>
 
         <form onSubmit={handleAuth} className="space-y-4">
+          {/* THE DROPDOWN (Inside the form now!) */}
+          <select 
+            value={accountType}
+            onChange={(e) => setAccountType(e.target.value)}
+            className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none bg-white text-sm font-medium text-slate-700"
+          >
+            <option value="student">Logging in as Student</option>
+            <option value="teacher">Logging in as Teacher (Curator)</option>
+          </select>
+
           <input 
             type="email" 
             placeholder="School Email" 
