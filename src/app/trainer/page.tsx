@@ -1,6 +1,8 @@
 "use client";
-import { useState, useEffect } from "react";
-import Link from 'next/link'; 
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from 'next/navigation';
+import Navbar from "@/components/Navbar";
+import Link from 'next/link';
 
 const DATA_MODES = {
   "Standard Text": ["Alice Vance", "Charlie Delta", "Cleshawn Montegue", "Zeke Miller", "Aubrey Hawk", "Olivia Millar", "Liam Jackson", "Jasper Whitlock", "Theodora Washington", "Sienna Von Trapp", "Blanche Reynolds", "Darcy Smith", "Lucy Wong", "Oliver Bullock", "Henry Frankfert", "Alder Liebowitz", "Fable Samualson", "Alyssa Vasquez", "Wilbur Kentucky", "Makorov Dreyer", "Nacho Bartoromo", "Kevin Ramage", "Raider Dave","Jeannie Gold", "Ricky Spanish", "Clip Clop", "Sholanda Dykes", "Gilda Bux", "Kevin Bacon", "Rocherro Ferrero", "Clint McGlint", "Gust Breezer", "Giardia Capitosto", "Rolex Gordini", "Erastus J. Horton", "Wally Wrobel", "Rudolfo Mayerling", "Dante Octovarius", "A. Poth E. Cary", "Jameson McSmirnoff", "Shebecca Escrow", "Harriet Bustax", "Sunny Sunderson", "Josay Bosay", "Dimitrus Fitzpatio", "Hugh J. Jeanman", "Gord Gomax", "Bonnie Ramirez", "Jenna D. Evans", "Jordan Edelstien", "Braff Zacklin", "Dom Fikowski", "Maurice Barns", "Roy R. McFreely", "Sidney Huffman", "Rafael Penguin", "Caitlyn M. Smith", "Juanito Pequeno", "Emmilou Sugarbean", "Ernest Shlumpel", "Abigail Lemonparty", "Max Jets", "Frankie Carconi", "Alicia Wilkner", "Frank Slade", "Gerald Ya Ya", "Luis Valdez", "Ira Siegal", "Fantasia Lopez", "Abbey Road", "Ace Chapman", "Bing Cooper", "Jenny Fromdabloc", "Hubert LeGrange", "Chex LeMeneux", "Vince Manaco", "Clive Trotter", "Miles Raymond", "Hershel Hershbaum"],
@@ -11,7 +13,11 @@ const DATA_MODES = {
 
 type Mode = keyof typeof DATA_MODES;
 
-export default function Home() {
+// Helper to handle URL parameters safely in Next.js
+function TrainerContent() {
+  const searchParams = useSearchParams();
+  const modeFromUrl = searchParams.get('mode') as Mode;
+
   const [mode, setMode] = useState<Mode | null>(null);
   const [level, setLevel] = useState(1);
   const [levelList, setLevelList] = useState<string[]>([]);
@@ -29,6 +35,13 @@ export default function Home() {
     const pool = DATA_MODES[m];
     return [...Array(5)].map(() => pool[Math.floor(Math.random() * pool.length)]);
   };
+
+  // Sync mode with URL choice
+  useEffect(() => {
+    if (modeFromUrl && DATA_MODES[modeFromUrl]) {
+      setMode(modeFromUrl);
+    }
+  }, [modeFromUrl]);
 
   useEffect(() => {
     if (mode) setLevelList(generateLevelList(mode));
@@ -99,11 +112,9 @@ export default function Home() {
     setTimeLeft(START_TIME); setErrors(0); setTotalChars(0); setGameState("waiting");
   };
 
-  // Math for CPM
   const timeActive = (START_TIME + ((level - 1) * 15)) - timeLeft;
   const cpm = timeActive > 0 ? Math.round((totalChars / timeActive) * 60) : 0;
 
-  // Professional Grading: A is 200+ CPM (roughly 40 WPM)
   const grade = (cpm > 200 && errors < 6) 
     ? { label: "A", color: "text-emerald-400", message: "WELL DONE!"  } 
     : (cpm > 150 && errors < 8) 
@@ -116,15 +127,10 @@ export default function Home() {
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-zinc-950 text-white p-4">
-      {/* NAVIGATION BAR - NOW INSIDE THE RETURN */}
-      <nav className="mb-8 flex items-center gap-8 bg-zinc-900 px-8 py-3 rounded-full border border-white/5">
-        <Link href="/" className="text-sm font-black text-yellow-500 hover:text-white transition-colors">TRAINER</Link>
-        <Link href="/profile" className="text-sm font-black text-zinc-500 hover:text-white transition-colors">PROFILE</Link>
-        <Link href="/" className="text-sm font-black text-zinc-500 hover:text-white transition-colors">HOME</Link>
-      </nav>
+      <Navbar />
 
-      <div className="w-full max-w-3xl bg-zinc-900 border border-white/5 rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden">
-        {/* The rest of your game code follows... */}
+      <div className="w-full max-w-3xl bg-zinc-900 border border-white/5 rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden mt-20">
+        
         {(gameState === "gameover" || gameState === "victory") && (
           <div className="absolute inset-0 bg-black/95 z-50 flex flex-col items-center justify-center rounded-[2.5rem] p-10">
             <h2 className={`text-6xl font-black mb-4 ${gameState === 'victory' ? 'text-emerald-500' : 'text-red-600'}`}>
@@ -133,18 +139,24 @@ export default function Home() {
             <div className="text-8xl font-black mb-8 font-mono bg-white/5 w-32 h-32 flex items-center justify-center rounded-full border border-white/10">
               <span className={grade.color}>{grade.label}</span>
             </div>
-            <button onClick={restart} className="bg-white text-black px-12 py-4 rounded-full font-black tracking-widest hover:bg-yellow-500 transition-all">MAIN MENU</button>
+            <div className="flex gap-4">
+               <button onClick={restart} className="bg-white text-black px-8 py-4 rounded-full font-black tracking-widest hover:bg-yellow-500 transition-all text-sm">RETRY</button>
+               <Link href="/assignments" className="bg-zinc-800 text-white px-8 py-4 rounded-full font-black tracking-widest hover:bg-zinc-700 transition-all text-sm">EXIT TO MISSIONS</Link>
+            </div>
           </div>
         )}
 
         {gameState === "waiting" && mode && (
           <div className="absolute inset-0 bg-black/80 z-30 flex flex-col items-center justify-center rounded-[2.5rem] backdrop-blur-sm">
-            <p className="text-white text-2xl font-mono animate-pulse uppercase tracking-widest">Press SPACE to Start</p>
+            <p className="text-white text-2xl font-mono animate-pulse uppercase tracking-widest text-center px-6">
+               Mode Locked: {mode}<br/>
+               <span className="text-sm opacity-50 block mt-2">Press SPACE to Initialize</span>
+            </p>
           </div>
         )}
 
         <div className="flex justify-between items-center mb-10">
-          <div className="text-[10px] font-black text-zinc-500 tracking-[0.3em] uppercase">{mode || "Select Mode"}</div>
+          <div className="text-[10px] font-black text-zinc-500 tracking-[0.3em] uppercase">{mode || "Select Training Module"}</div>
           <div className="flex gap-4 items-center">
             <div className="text-emerald-500 font-mono text-sm">{cpm} CPM</div>
             <div className={`font-mono text-sm px-4 py-1 rounded-full border ${errors >= 12 ? 'border-red-500 text-red-500 animate-pulse' : 'border-zinc-700 text-zinc-500'}`}>
@@ -154,11 +166,11 @@ export default function Home() {
         </div>
 
         {!mode ? (
-           <div className="grid grid-cols-2 gap-4 mt-4">
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
            {Object.keys(DATA_MODES).map((m) => (
-             <button key={m} onClick={() => setMode(m as Mode)} className="bg-zinc-800/50 border border-white/5 p-6 rounded-2xl hover:border-yellow-500 transition-all text-left">
-               <h3 className="font-bold text-lg">{m}</h3>
-               <p className="text-[10px] text-zinc-500 mt-1">Accuracy Mode</p>
+             <button key={m} onClick={() => setMode(m as Mode)} className="bg-zinc-800/50 border border-white/5 p-6 rounded-2xl hover:border-yellow-500 transition-all text-left group">
+               <h3 className="font-black text-lg group-hover:text-yellow-500 transition-colors">{m}</h3>
+               <p className="text-[10px] text-zinc-500 mt-1 uppercase tracking-widest">Initialization Required</p>
              </button>
            ))}
          </div>
@@ -171,11 +183,11 @@ export default function Home() {
             </div>
 
             <div className="text-center mb-12">
-              <p className="text-xs text-zinc-600 uppercase mb-4 tracking-widest font-bold">Level {level} of 10</p>
-              <div className="text-4xl font-mono tracking-tighter leading-relaxed">
+              <p className="text-xs text-zinc-600 uppercase mb-4 tracking-widest font-bold">Training Level {level}</p>
+              <div className="text-4xl font-mono tracking-tighter leading-relaxed min-h-[4rem]">
                 {levelList[currentIndex]?.split("").map((char, i) => {
                   let color = "text-zinc-700";
-                  if (i < userInput.length) color = userInput[i] === char ? "text-emerald-400" : "text-red-500 underline";
+                  if (i < userInput.length) color = userInput[i] === char ? "text-emerald-400" : "text-red-500 underline decoration-2 offset-4";
                   return <span key={i} className={color}>{char}</span>;
                 })}
               </div>
@@ -184,17 +196,26 @@ export default function Home() {
             <input
               autoFocus
               onKeyDown={(e) => { if (e.key === 'Backspace') e.preventDefault(); }}
-              className="w-full bg-black/20 border-2 border-white/5 rounded-2xl p-6 text-2xl font-mono text-center focus:outline-none focus:border-yellow-500 transition-all"
+              className="w-full bg-black/40 border-2 border-white/5 rounded-2xl p-8 text-3xl font-mono text-center focus:outline-none focus:border-yellow-500 transition-all text-white"
               value={userInput}
               onChange={handleInputChange}
-              placeholder="..."
+              placeholder="Begin sequence..."
             />
             <div className="mt-8 text-center font-mono text-zinc-500 text-sm">
-              {timeLeft}s remaining
+              {timeLeft}s REMAINING
             </div>
           </>
         )}
       </div>
     </main>
+  );
+}
+
+// Wrap in Suspense to prevent Next.js build errors with useSearchParams
+export default function Home() {
+  return (
+    <Suspense fallback={<div>Loading Academy Systems...</div>}>
+      <TrainerContent />
+    </Suspense>
   );
 }

@@ -3,12 +3,13 @@ import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Link from 'next/link';
 
-
 export default function AssignmentsPage() {
   const [role, setRole] = useState("");
+  // Updated types to match your DATA_MODES exactly (Standard Text, Alpha-Numeric, etc.)
   const [assignments, setAssignments] = useState([
-    { id: 1, title: "Level 1: Basic Data Entry", type: "Speed", difficulty: "Beginner" },
-    { id: 2, title: "Level 2: Error Detection", type: "Accuracy", difficulty: "Intermediate" }
+    { id: 1, title: "Level 1: Basic Data Entry", type: "Standard Text", difficulty: "Beginner" },
+    { id: 2, title: "Level 2: Error Detection", type: "Alpha-Numeric", difficulty: "Intermediate" },
+    { id: 3, title: "Level 3: Ten-Key Mastery", type: "Numeric (10-Key)", difficulty: "Advanced" }
   ]);
 
   useEffect(() => {
@@ -25,7 +26,7 @@ export default function AssignmentsPage() {
       const newAssignment = {
         id: Date.now(),
         title: titleInput.value,
-        type: "Custom Mission",
+        type: "Standard Text", // Default to a valid mode
         difficulty: "Teacher Assigned"
       };
       setAssignments([newAssignment, ...assignments]);
@@ -39,24 +40,19 @@ export default function AssignmentsPage() {
       
       <div className="pt-32 pb-12 px-6 max-w-5xl mx-auto">
         <div className="mb-6">
-  <Link 
-    href="/dashboard" 
-    className="inline-flex items-center gap-2 text-sm font-bold transition-all
-               text-slate-500 hover:text-blue-700
-               dark:text-zinc-500 dark:hover:text-yellow-500 group"
-  >
-    {/* The Arrow */}
-    <span className="transition-transform group-hover:-translate-x-1">
-      ←
-    </span>
-    RETURN TO COMMAND CENTER
-  </Link>
-</div>
+          <Link 
+            href="/dashboard" 
+            className="inline-flex items-center gap-2 text-sm font-bold transition-all
+                       text-slate-500 hover:text-blue-700
+                       dark:text-zinc-500 dark:hover:text-yellow-500 group"
+          >
+            <span className="transition-transform group-hover:-translate-x-1">←</span>
+            RETURN TO COMMAND CENTER
+          </Link>
+        </div>
 
         <header className="mb-10">
-          {/* text-foreground ensures it turns white in dark mode */}
           <h1 className="text-4xl font-black text-foreground mb-2">Mission Archive</h1>
-          {/* Changed color slightly for better dark mode visibility */}
           <p className="text-blue-600 dark:text-yellow-500 font-medium">Select a task to begin your training session.</p>
         </header>
 
@@ -91,10 +87,8 @@ export default function AssignmentsPage() {
         {/* ASSIGNMENT GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {assignments.map((assignment) => (
-            <div key={assignment.id} className="group p-6 rounded-2xl border transition-all cursor-pointer
-              /* Light Mode Colors */
+            <div key={assignment.id} className="group p-6 rounded-2xl border transition-all
               bg-white border-slate-200 hover:border-blue-400 hover:shadow-md
-              /* Dark Mode Colors */
               dark:bg-zinc-900 dark:border-white/5 dark:hover:border-yellow-500/50 dark:hover:shadow-black">
               
               <div className="flex justify-between items-start mb-4">
@@ -108,10 +102,13 @@ export default function AssignmentsPage() {
                 {assignment.title}
               </h3>
               
-              <button className="mt-6 w-full py-3 rounded-xl font-black transition-all opacity-0 group-hover:opacity-100
-                bg-slate-900 text-white dark:bg-yellow-500 dark:text-black">
-                START MISSION
-              </button>
+              {/* FIXED LINK: This wraps the button and passes the mode to the trainer */}
+              <Link href={`/trainer?mode=${assignment.type}`}>
+                <button className="mt-6 w-full py-3 rounded-xl font-black transition-all opacity-0 group-hover:opacity-100
+                  bg-slate-900 text-white dark:bg-yellow-500 dark:text-black">
+                  START MISSION
+                </button>
+              </Link>
             </div>
           ))}
         </div>
