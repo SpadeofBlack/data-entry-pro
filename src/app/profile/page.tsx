@@ -1,101 +1,105 @@
 "use client";
-
-import React from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useState } from "react";
+import Navbar from "@/components/Navbar";
 
 export default function ProfilePage() {
-  const router = useRouter();
-
-  const handleSave = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert("Profile changes saved to FOKEL Academy records!");
-  };
+  const [user] = useState({
+    firstName: "Idali",
+    lastName: "Cooper",
+    institution: "El Paso Community College",
+    degree: "Associate of Science in Computer Programming",
+    graduation: "May 2026",
+    role: "Student / Game Developer"
+  });
 
   return (
-    <div className="bg-slate-50 min-h-screen font-sans text-slate-900">
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md flex items-center justify-between px-8 py-4 border-b border-slate-200">
-        <div className="flex items-center gap-8">
-            <span className="text-2xl font-bold tracking-tight text-blue-800">FOKEL Academy</span>
-            <div className="flex items-center gap-6 ml-4">
-                <Link href="/" className="text-sm font-bold text-slate-500 hover:text-blue-800">TRAINER</Link>
-                <Link href="/profile" className="text-sm font-bold text-blue-800">PROFILE</Link>
-                <Link href="/dashboard" className="text-sm font-bold text-slate-500 hover:text-blue-800">DASHBOARD</Link>
-            </div>
-        </div>
-  <div className="h-10 w-10 rounded-full bg-blue-800 flex items-center justify-center text-white font-bold">
-    AJ
-  </div>
-</nav>
+    <main className="min-h-screen bg-white dark:bg-zinc-950 text-slate-900 dark:text-white transition-colors duration-500">
+      <Navbar />
+      
+      <div className="pt-32 pb-12 px-6 max-w-4xl mx-auto">
+        <header className="mb-12 border-b border-slate-200 dark:border-white/10 pb-8">
+          <h1 className="text-5xl font-black tracking-tighter mb-2 italic">ACADEMIC DOSSIER</h1>
+          <p className="text-slate-500 dark:text-zinc-500 font-mono uppercase tracking-[0.3em] text-xs font-bold">
+            Identity Verification: Active
+          </p>
+        </header>
 
-      {/* Sidebar */}
-      <aside className="h-screen w-64 fixed left-0 top-0 bg-slate-100 flex flex-col p-4 gap-2 pt-24 border-r border-slate-200">
-        <h2 className="text-xl font-extrabold text-blue-900 px-4">FOKEL Portal</h2>
-        <p className="text-xs text-slate-500 font-medium px-4 mb-6">Academic Identity</p>
-        <button className="flex items-center gap-3 px-4 py-3 bg-white text-blue-700 rounded-lg shadow-sm font-semibold">
-          Profile Overview
-        </button>
-      </aside>
-
-      {/* Main Content */}
-      <main className="ml-64 pt-24 p-8">
-        <div className="max-w-4xl mx-auto">
-          <header className="mb-10">
-            <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">Digital Curator Profile</h1>
-            <p className="mt-2 text-slate-600">Precision management of your academic and personal records.</p>
-          </header>
-
-          <form onSubmit={handleSave} className="space-y-8">
-            {/* Identity Details */}
-            <div className="bg-white rounded-xl p-8 shadow-sm border-t-4 border-blue-800">
-              <h3 className="text-lg font-bold mb-6 text-blue-900">Identity Details</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">First Name</label>
-                  <input className="bg-slate-50 border border-slate-200 rounded-md px-4 py-3 focus:ring-2 focus:ring-blue-800 outline-none" type="text" defaultValue="Alexander" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          
+          {/* LEFT COLUMN: IDENTITY & SKILLS */}
+          <div className="md:col-span-2 space-y-8">
+            
+            {/* Identity Details - Now Light/Dark Responsive */}
+            <section className="bg-slate-50 border border-slate-200 shadow-sm 
+                                dark:bg-zinc-900 dark:border-white/5 dark:shadow-none 
+                                p-8 rounded-[2rem] transition-all">
+              <h2 className="text-sm font-black text-blue-600 dark:text-yellow-500 uppercase tracking-widest mb-6">
+                Identity Details
+              </h2>
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-[10px] text-slate-500 dark:text-zinc-500 uppercase mb-1 font-bold">First Name</label>
+                  <p className="text-xl font-bold">{user.firstName}</p>
                 </div>
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Last Name</label>
-                  <input className="bg-slate-50 border border-slate-200 rounded-md px-4 py-3 focus:ring-2 focus:ring-blue-800 outline-none" type="text" defaultValue="Curator" />
+                <div>
+                  <label className="block text-[10px] text-slate-500 dark:text-zinc-500 uppercase mb-1 font-bold">Last Name</label>
+                  <p className="text-xl font-bold">{user.lastName}</p>
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-[10px] text-slate-500 dark:text-zinc-500 uppercase mb-1 font-bold">Current Institution</label>
+                  <p className="text-xl font-bold text-blue-700 dark:text-blue-400">{user.institution}</p>
                 </div>
               </div>
-            </div>
+            </section>
 
-            {/* Academic Section (The new stuff she sent!) */}
-            <div className="bg-white rounded-xl p-8 shadow-sm border-l-4 border-blue-400">
-              <h3 className="text-lg font-bold mb-6 text-blue-900">Academic Context</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Institution</label>
-                  <p className="font-bold text-slate-800">FOKEL Academy of Higher Learning</p>
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Teacher</label>
-                  <input className="bg-slate-50 border border-slate-200 rounded-md px-4 py-3 outline-none" type="text" defaultValue="Dr. Elizabeth Sterling" />
-                </div>
+            {/* Technical Stack - (Your Corrected Section) */}
+            <section className="bg-slate-50 border border-slate-200 shadow-sm 
+                                dark:bg-zinc-900 dark:border-white/5 dark:shadow-none 
+                                p-8 rounded-[2rem] transition-all">
+              <h2 className="text-sm font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-6">
+                Technical Stack
+              </h2>
+              <div className="flex flex-wrap gap-3">
+                {["C#", "Unity Engine", "Next.js", "React", "Tailwind CSS", "Local LLMs"].map(skill => (
+                  <span key={skill} className="px-4 py-2 rounded-full text-xs font-mono font-bold
+                                               bg-white border border-slate-200 text-slate-700
+                                               dark:bg-black/40 dark:border-white/10 dark:text-zinc-300">
+                    {skill}
+                  </span>
+                ))}
               </div>
-            </div>
+            </section>
+          </div>
 
-            {/* Footer Actions */}
-            <footer className="pt-6 flex flex-col-reverse sm:flex-row items-center justify-end gap-4">
-              <button 
-                onClick={() => router.push('/')}
-                type="button" 
-                className="w-full sm:w-auto px-8 py-3 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-lg"
-              >
-                Back to Game
-              </button>
-              <button 
-                type="submit" 
-                className="w-full sm:w-auto px-10 py-3 text-sm font-bold text-white bg-blue-800 shadow-md hover:bg-blue-900 rounded-lg"
-              >
-                Save Changes
-              </button>
-            </footer>
-          </form>
+          {/* RIGHT COLUMN: STATUS */}
+          <div className="space-y-8">
+            
+            {/* Degree Progress - High Contrast Blue stays consistent */}
+            <section className="bg-blue-600 p-8 rounded-[2rem] text-white shadow-lg shadow-blue-500/20">
+              <h2 className="text-[10px] font-black uppercase tracking-widest mb-4 opacity-80">Degree Progress</h2>
+              <p className="text-2xl font-black leading-tight mb-4">{user.degree}</p>
+              <div className="pt-4 border-t border-white/20">
+                <p className="text-[10px] uppercase font-bold opacity-70">Expected Graduation</p>
+                <p className="font-mono font-bold">{user.graduation}</p>
+              </div>
+            </section>
+
+            {/* Development Role - Now Light/Dark Responsive */}
+            <section className="bg-slate-50 border border-slate-200 shadow-sm 
+                                dark:bg-zinc-900 dark:border-white/5 dark:shadow-none 
+                                p-8 rounded-[2rem] transition-all">
+              <h2 className="text-[10px] font-black text-slate-500 dark:text-zinc-500 uppercase tracking-widest mb-4">
+                Development Role
+              </h2>
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 bg-blue-600 dark:bg-yellow-500 rounded-full animate-pulse" />
+                <p className="font-bold text-lg">{user.role}</p>
+              </div>
+            </section>
+          </div>
+
         </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }

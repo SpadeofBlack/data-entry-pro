@@ -5,11 +5,14 @@ import Link from 'next/link';
 
 export default function AssignmentsPage() {
   const [role, setRole] = useState("");
-  // Updated types to match your DATA_MODES exactly (Standard Text, Alpha-Numeric, etc.)
   const [assignments, setAssignments] = useState([
-    { id: 1, title: "Level 1: Basic Data Entry", type: "Standard Text", difficulty: "Beginner" },
-    { id: 2, title: "Level 2: Error Detection", type: "Alpha-Numeric", difficulty: "Intermediate" },
-    { id: 3, title: "Level 3: Ten-Key Mastery", type: "Numeric (10-Key)", difficulty: "Advanced" }
+    { id: 1, title: "Warm-up: Home Row Basics", type: "Standard Text", difficulty: "Beginner" },
+    { id: 2, title: "Level 1: Standard Speed Trial", type: "Standard Text", difficulty: "Beginner" },
+    { id: 3, title: "Drill: Alpha-Numeric Mix", type: "Alpha-Numeric", difficulty: "Intermediate" },
+    { id: 4, title: "Level 2: Precision Challenge", type: "Alpha-Numeric", difficulty: "Intermediate" },
+    { id: 5, title: "Drill: Financial Entry (10-Key)", type: "Numeric (10-Key)", difficulty: "Advanced" },
+    { id: 6, title: "Level 3: Ten-Key Mastery", type: "Numeric (10-Key)", difficulty: "Advanced" },
+    { id: 7, title: "Level 4: Structured Data Forms", type: "Structured Forms", difficulty: "Expert" }
   ]);
 
   useEffect(() => {
@@ -26,11 +29,12 @@ export default function AssignmentsPage() {
       const newAssignment = {
         id: Date.now(),
         title: titleInput.value,
-        type: "Standard Text", // Default to a valid mode
+        type: "Standard Text",
         difficulty: "Teacher Assigned"
       };
+      // Fixed: Add the new assignment to state so it renders
       setAssignments([newAssignment, ...assignments]);
-      titleInput.value = ""; 
+      titleInput.value = "";
     }
   };
 
@@ -56,12 +60,10 @@ export default function AssignmentsPage() {
           <p className="text-blue-600 dark:text-yellow-500 font-medium">Select a task to begin your training session.</p>
         </header>
 
-        {/* TEACHER UPLOAD SECTION */}
         {role === "teacher" && (
           <section className="mb-12 p-6 rounded-2xl border-2 border-dashed transition-all
             bg-white border-blue-200 shadow-sm
             dark:bg-zinc-900/50 dark:border-white/10 dark:shadow-black/50">
-            
             <div className="flex items-center gap-3 mb-4">
               <div className="w-2 h-2 bg-blue-600 dark:bg-yellow-500 rounded-full animate-pulse"></div>
               <h2 className="text-lg font-bold text-blue-800 dark:text-yellow-500 uppercase tracking-wider">Curator Tools: Upload Mission</h2>
@@ -91,6 +93,7 @@ export default function AssignmentsPage() {
               bg-white border-slate-200 hover:border-blue-400 hover:shadow-md
               dark:bg-zinc-900 dark:border-white/5 dark:hover:border-yellow-500/50 dark:hover:shadow-black">
               
+              {/* Added Mission Info Header */}
               <div className="flex justify-between items-start mb-4">
                 <span className="px-3 py-1 bg-slate-100 dark:bg-black/40 text-slate-600 dark:text-zinc-400 text-xs font-bold rounded-full uppercase">
                   {assignment.type}
@@ -102,13 +105,19 @@ export default function AssignmentsPage() {
                 {assignment.title}
               </h3>
               
-              {/* FIXED LINK: This wraps the button and passes the mode to the trainer */}
-              <Link href={`/trainer?mode=${assignment.type}`}>
-                <button className="mt-6 w-full py-3 rounded-xl font-black transition-all opacity-0 group-hover:opacity-100
-                  bg-slate-900 text-white dark:bg-yellow-500 dark:text-black">
-                  START MISSION
-                </button>
-              </Link>
+              <div className="mt-6 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                <Link href={`/trainer?mode=${assignment.type}&practice=true`}>
+                  <button className="w-full py-2 rounded-xl font-bold border-2 border-slate-900 dark:border-yellow-500 text-slate-900 dark:text-yellow-500 hover:bg-slate-100 dark:hover:bg-yellow-500/10 transition-all text-sm">
+                    PRACTICE (UNTIMED)
+                  </button>
+                </Link>
+                
+                <Link href={`/trainer?mode=${assignment.type}`}>
+                  <button className="w-full py-3 rounded-xl font-black bg-slate-900 text-white dark:bg-yellow-500 dark:text-black hover:scale-[1.02] transition-all">
+                    START TRIAL (TIMED)
+                  </button>
+                </Link>
+              </div>
             </div>
           ))}
         </div>

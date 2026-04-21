@@ -1,90 +1,120 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 
 export default function TestsPage() {
-  const [role, setRole] = useState("");
-  const [activeTab, setActiveTab] = useState("exams"); // Toggle between 'exams' and 'grades'
-  
-  // Simulated Data
-  const [tests] = useState([
-    { id: 101, title: "Midterm: Medical Terminology", timeLimit: "5:00", passingCpm: 45 },
-  ]);
-
-  const [studentGrades] = useState([
-    { id: 1, test: "Level 1 Practice", score: "52 CPM", date: "2026-04-15", status: "PASS" },
-    { id: 2, test: "Speed Drills", score: "38 CPM", date: "2026-04-18", status: "FAIL" },
-  ]);
-
-  const [teacherGradebook] = useState([
-    { id: 1, student: "Idali Cooper", test: "Midterm", score: "55 CPM", status: "PASS" },
-    { id: 2, student: "John Doe", test: "Midterm", score: "42 CPM", status: "FAIL" },
-  ]);
+  const [role, setRole] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
+  const [activeTab, setActiveTab] = useState("active");
 
   useEffect(() => {
-    setRole(localStorage.getItem('userRole') || "student");
+    setIsClient(true);
+    const storedRole = localStorage.getItem("userRole");
+    setRole(storedRole ? storedRole.toLowerCase() : "student");
   }, []);
 
+  if (!isClient) return null;
+
+  const isTeacher = role === "teacher" || role === "admin";
+
   return (
-    <main className="min-h-screen bg-background text-foreground transition-colors duration-500">
+    <main className="min-h-screen bg-white dark:bg-zinc-950 transition-colors duration-500 text-slate-900 dark:text-white">
       <Navbar />
-      
-      <div className="pt-32 pb-12 px-6 max-w-5xl mx-auto">
-        {/* Tab Switcher */}
-        <div className="flex gap-4 mb-8 border-b border-slate-200">
-          <button 
-            onClick={() => setActiveTab("exams")}
-            className={`pb-4 px-2 font-bold text-sm transition-all ${activeTab === 'exams' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-400'}`}
+
+      <div className="pt-32 pb-12 px-6 max-w-6xl mx-auto">
+        {/* HEADER SECTION */}
+        <header className="mb-12">
+          <h1 className="text-5xl font-black tracking-tighter mb-2 italic uppercase">
+            {isTeacher ? "Test Deployment Hub" : "Examination Center"}
+          </h1>
+          <p className="text-blue-600 dark:text-yellow-500 font-mono uppercase tracking-[0.3em] text-xs font-bold">
+            {isTeacher ? "Faculty Authorization: Active" : "Student Training Protocol"}
+          </p>
+        </header>
+
+        {/* TABS */}
+        <div className="flex gap-8 border-b border-slate-200 dark:border-white/10 mb-12">
+          <button
+            onClick={() => setActiveTab("active")}
+            className={`pb-4 text-xs font-black uppercase tracking-widest transition-all ${
+              activeTab === "active" ? "border-b-2 border-blue-600 text-blue-600 dark:border-yellow-500 dark:text-yellow-500" : "text-slate-400"
+            }`}
           >
-            ACTIVE EXAMS
+            {isTeacher ? "Deployed Tests" : "Active Exams"}
           </button>
-          <button 
-            onClick={() => setActiveTab("grades")}
-            className={`pb-4 px-2 font-bold text-sm transition-all ${activeTab === 'grades' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-400'}`}
+          <button
+            onClick={() => setActiveTab("secondary")}
+            className={`pb-4 text-xs font-black uppercase tracking-widest transition-all ${
+              activeTab === "secondary" ? "border-b-2 border-blue-600 text-blue-600 dark:border-yellow-500 dark:text-yellow-500" : "text-slate-400"
+            }`}
           >
-            GRADEBOOK
+            {isTeacher ? "Submission Analytics" : "Gradebook"}
           </button>
         </div>
 
-        {activeTab === "exams" ? (
-          <section>
-            <h1 className="text-3xl font-black text-slate-900 mb-6">Examination Center</h1>
-            {/* ... (Insert your Test List code here) ... */}
-          </section>
-        ) : (
-          <section className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
-            <div className="p-6 border-b border-slate-100 bg-slate-50">
-              <h2 className="text-xl font-bold text-slate-800">
-                {role === "teacher" ? "Class Performance Overview" : "Your Progress Report"}
-              </h2>
-            </div>
+        {/* CONTENT AREA */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          
+          <div className="lg:col-span-2 space-y-8">
+            {activeTab === "active" ? (
+              <section className="space-y-6">
+                {/* TEACHER ONLY: UPLOAD CARD */}
+                {isTeacher && (
+                  <div className="bg-slate-50 dark:bg-zinc-900 border-2 border-dashed border-slate-200 dark:border-white/10 p-12 rounded-[2.5rem] flex flex-col items-center text-center group hover:border-blue-500 dark:hover:border-yellow-500 transition-all cursor-pointer">
+                    <div className="w-16 h-16 bg-blue-100 dark:bg-yellow-500/10 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                      <span className="text-2xl">+</span>
+                    </div>
+                    <h3 className="font-black text-xl mb-2">Deploy New Examination</h3>
+                    <p className="text-sm text-slate-500 dark:text-zinc-400 max-w-xs">
+                      Upload .json or .md mission files to update the student archive.
+                    </p>
+                  </div>
+                )}
 
-            <table className="w-full text-left">
-              <thead className="bg-slate-50 text-slate-500 text-xs uppercase font-black">
-                <tr>
-                  {role === "teacher" && <th className="p-4">Student</th>}
-                  <th className="p-4">Assessment</th>
-                  <th className="p-4">Result</th>
-                  <th className="p-4">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {(role === "teacher" ? teacherGradebook : studentGrades).map((entry) => (
-                  <tr key={entry.id} className="hover:bg-slate-50 transition-colors">
-                    {role === "teacher" && <td className="p-4 font-bold text-blue-800">{(entry as any).student}</td>}
-                    <td className="p-4 text-slate-700">{entry.test}</td>
-                    <td className="p-4 font-mono font-bold">{entry.score}</td>
-                    <td className="p-4">
-                      <span className={`px-2 py-1 rounded-md text-[10px] font-black ${entry.status === 'PASS' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                        {entry.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </section>
-        )}
+                {/* TEST LIST (Shared/Mock data) */}
+                <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/5 p-8 rounded-[2.5rem] shadow-sm">
+                  <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6 italic">Current Mission Catalog</h3>
+                  <div className="space-y-4">
+                    {["Standard Speed Trial", "Alpha-Numeric Mix"].map((test) => (
+                      <div key={test} className="flex justify-between items-center p-6 bg-slate-50 dark:bg-black/20 rounded-3xl border border-slate-100 dark:border-white/5">
+                        <span className="font-bold">{test}</span>
+                        <button className="text-[10px] font-black uppercase tracking-widest bg-slate-900 dark:bg-white text-white dark:text-black px-4 py-2 rounded-lg">
+                          {isTeacher ? "Edit Mission" : "Start Test"}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            ) : (
+              <div className="bg-slate-50 dark:bg-zinc-900 p-12 rounded-[2.5rem] text-center border border-slate-200 dark:border-white/5">
+                 <p className="text-slate-400 font-mono text-xs italic">Analytics and reporting data pending mission completion.</p>
+              </div>
+            )}
+          </div>
+
+          {/* SIDEBAR */}
+          <div className="space-y-8">
+            <div className={`p-8 rounded-[2.5rem] text-white shadow-xl ${isTeacher ? "bg-slate-900 shadow-slate-900/20" : "bg-blue-600 shadow-blue-500/20"}`}>
+              <h3 className="text-[10px] font-black uppercase tracking-widest mb-4 opacity-70">
+                {isTeacher ? "Mission Status" : "Your Readiness"}
+              </h3>
+              <p className="text-4xl font-black tracking-tighter">
+                {isTeacher ? "2 ACTIVE" : "LEVEL 1"}
+              </p>
+            </div>
+            
+            <div className="bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-white/5 p-8 rounded-[2.5rem]">
+               <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 italic">Rules of Engagement</h3>
+               <ul className="text-xs space-y-3 font-bold text-slate-500 dark:text-zinc-400">
+                 <li>• All deployments are final once synced.</li>
+                 <li>• Student telemetry is captured in real-time.</li>
+                 <li>• Mission parameters must be C# or Unity focused.</li>
+               </ul>
+            </div>
+          </div>
+
+        </div>
       </div>
     </main>
   );

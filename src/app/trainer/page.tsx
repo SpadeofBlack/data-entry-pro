@@ -23,13 +23,13 @@ function TrainerContent() {
   const [levelList, setLevelList] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userInput, setUserInput] = useState("");
-  const [timeLeft, setTimeLeft] = useState(45);
+  const [timeLeft, setTimeLeft] = useState(60);
   const [gameState, setGameState] = useState("waiting"); 
   const [errors, setErrors] = useState(0);
   const [totalChars, setTotalChars] = useState(0);
 
   const ERROR_LIMIT = 15;
-  const START_TIME = 45;
+  const START_TIME = 60;
 
   const generateLevelList = (m: Mode) => {
     const pool = DATA_MODES[m];
@@ -58,15 +58,16 @@ function TrainerContent() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [gameState, mode]);
 
+  const isPractice = searchParams.get('practice') ==='true';
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    if (gameState === "playing" && timeLeft > 0) {
+    if (gameState === "playing" && timeLeft > 0 && !isPractice) {
       timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
-    } else if (timeLeft <= 0 && gameState === "playing") {
+    } else if (timeLeft <= 0 && gameState === "playing" && !isPractice) {
       setGameState("gameover");
     }
     return () => clearInterval(timer);
-  }, [gameState, timeLeft]);
+  }, [gameState, timeLeft, isPractice]);
 
   useEffect(() => {
     if (errors >= ERROR_LIMIT && gameState === "playing") {

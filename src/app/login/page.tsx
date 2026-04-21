@@ -17,8 +17,19 @@ export default function AuthPage() {
       alert("Passwords do not match!");
       return;
     }
-    window.location.href = accountType === "student" ? "/dashboard" : "/admin";
-  };
+    // 1. SAVE THE ROLE (This is the missing step!)
+  // We use "teacher" to match your Dashboard's protection logic
+  const roleValue = accountType === "admin" ? "teacher" : "student";
+  localStorage.setItem("userRole", roleValue);
+
+  // 2. REDIRECT
+  // Ensure the admin path matches your actual folder name (dashboard)
+  if (accountType === "admin") {
+    window.location.href = "/dashboard";
+  } else {
+    window.location.href = "/dashboard"; // Or wherever students go
+  }
+};
 
   return (
     // Added dark:bg-zinc-950 to handle the full screen background
