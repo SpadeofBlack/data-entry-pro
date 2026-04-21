@@ -1,59 +1,49 @@
-"use client"; // Must be at the top for useState to work
-import { useState } from "react";
-import Link from 'next/link';
+"use client";
+import { useState, useEffect } from "react";
+import Link from "next/link";
 
 export default function Navbar() {
+  // 1. Define the state (This fixes "isDark is red")
   const [isDark, setIsDark] = useState(false);
 
+  // 2. Define the function (This fixes "toggleTheme is red")
   const toggleTheme = () => {
-    setIsDark(!isDark);
-    if (!isDark) {
-      document.documentElement.classList.add('dark');
+    const root = window.document.documentElement;
+    if (isDark) {
+      root.classList.remove('dark');
+      setIsDark(false);
     } else {
-      document.documentElement.classList.remove('dark');
+      root.classList.add('dark');
+      setIsDark(true);
     }
   };
 
   return (
-    <nav className="fixed top-0 w-full z-50 transition-all duration-500
-      /* Light Mode Styles */
-      bg-white/80 border-b border-slate-200 
-      /* Dark Mode Styles */
-      dark:bg-zinc-950/80 dark:border-white/5 
-      backdrop-blur-md flex items-center justify-between px-8 py-4">
-      
-      <div className="flex items-center gap-8">
-        {/* Brand Name */}
-        <span className="text-2xl font-black tracking-tighter uppercase italic
-          text-blue-800 dark:text-yellow-500 transition-colors">
-          FOKEL Academy
-        </span>
+    <nav className="fixed top-0 w-full z-50 border-b bg-background/80 backdrop-blur-md border-slate-200 dark:border-white/10">
+      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        
+        <Link href="/dashboard" className="text-2xl font-black italic text-blue-600 dark:text-yellow-500">
+          FOKEL ACADEMY
+        </Link>
 
-        {/* Navigation Links */}
-        <div className="hidden md:flex items-center gap-6 ml-4">
-          <Link href="/" className="text-sm font-bold text-slate-500 dark:text-zinc-500 hover:text-blue-800 dark:hover:text-yellow-500 transition-colors">
-            HOME
-          </Link>
-          <Link href="/assignments" className="text-sm font-bold text-slate-500 dark:text-zinc-500 hover:text-blue-800 dark:hover:text-yellow-500 transition-colors">
-            ASSIGNMENTS
-          </Link>
-          <Link href="/dashboard" className="text-sm font-black text-blue-600 dark:text-yellow-500 bg-blue-50 dark:bg-yellow-500/10 px-3 py-1 rounded-md transition-all">
-            DASHBOARD
-          </Link>
+        <div className="flex items-center gap-8">
+          {/* Navigation Links */}
+          <div className="flex gap-6 text-xs font-bold tracking-widest text-slate-500 dark:text-zinc-400">
+            <Link href="/assignments" className="hover:text-blue-600 dark:hover:text-yellow-500">MISSIONS</Link>
+            <Link href="/tests" className="hover:text-blue-600 dark:hover:text-yellow-500">TESTS</Link>
+            <Link href="/profile" className="hover:text-blue-600 dark:hover:text-yellow-500">PROFILE</Link>
+          </div>
+
+          {/* The Toggle Button */}
+          <button 
+            onClick={toggleTheme} 
+            className="px-4 py-2 border-2 rounded-lg font-black text-[10px] tracking-widest border-slate-200 text-slate-400 dark:border-white/10 dark:text-yellow-500"
+          >
+            {isDark ? "SUN MODE" : "MOON MODE"}
+          </button>
         </div>
-      </div>
 
-      {/* THE TOGGLE BUTTON */}
-      <button 
-        onClick={toggleTheme}
-        className="p-3 rounded-xl bg-slate-100 dark:bg-zinc-900 text-slate-600 dark:text-yellow-500 hover:scale-110 active:scale-95 transition-all border border-slate-200 dark:border-white/10"
-      >
-        {isDark ? (
-          <span className="text-xs font-black">SUN MODE</span>
-        ) : (
-          <span className="text-xs font-black">MOON MODE</span>
-        )}
-      </button>
+      </div>
     </nav>
   );
 }

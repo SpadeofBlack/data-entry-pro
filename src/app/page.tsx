@@ -1,64 +1,36 @@
-import React from 'react';
-import Link from 'next/link';
 import Navbar from "@/components/Navbar";
+import Link from "next/link";
 
-export default function HomePage() {
+export default function Dashboard() {
   return (
-    <>
+    <main className="min-h-screen bg-background text-foreground transition-colors duration-500">
       <Navbar />
-      <main className="pt-20">
-        {/* Your Landing Page Content */}
-      </main>
-       <div className="bg-white min-h-screen">
-      {/* Hero Section */}
-      <section className="relative py-20 lg:py-32 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-8 relative z-10">
-          <div className="max-w-3xl">
-            <h1 className="text-6xl lg:text-7xl font-black text-slate-900 tracking-tight mb-6">
-              Master the Art of <span className="text-blue-800">Precision.</span>
-            </h1>
-            <p className="text-xl text-slate-600 mb-10 leading-relaxed">
-              Welcome to FOKEL Academy. Whether you're a student embarking on 
-              new missions or an educator managing the workspace, excellence 
-              starts with a single keystroke.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/trainer" className="px-8 py-4 bg-blue-800 text-white rounded-xl font-bold text-lg hover:bg-blue-900 transition-all text-center">
-                Launch Trainer
-              </Link>
-              <Link href="/assignments" className="px-8 py-4 bg-slate-100 text-slate-900 rounded-xl font-bold text-lg hover:bg-slate-200 transition-all text-center">
-                View Missions
-              </Link>
-            </div>
-          </div>
+      
+      {/* pt-40 gives plenty of room below the Navbar */}
+      <div className="pt-40 pb-20 px-6 max-w-5xl mx-auto flex flex-col items-center text-center">
+        
+        <header className="space-y-6">
+          <h1 className="text-5xl md:text-7xl font-black tracking-tighter">
+            Master the Art of <br/>
+            <span className="text-blue-600 dark:text-yellow-500 italic">Precision.</span>
+          </h1>
+          
+          <p className="max-w-2xl mx-auto text-lg text-slate-500 dark:text-zinc-400 font-medium">
+            Welcome to FOKEL Academy. Whether you're a student embarking on new missions 
+            or an educator managing the workspace, excellence starts with a single keystroke.
+          </p>
+        </header>
+
+        <div className="flex flex-wrap justify-center gap-4 mt-10">
+          <Link href="/trainer" className="px-10 py-4 bg-blue-600 dark:bg-yellow-500 text-white dark:text-black font-black rounded-2xl shadow-xl transition-transform hover:scale-105">
+            LAUNCH TRAINER
+          </Link>
+          <Link href="/assignments" className="px-10 py-4 bg-slate-100 dark:bg-zinc-900 text-slate-900 dark:text-white font-black rounded-2xl border border-slate-200 dark:border-white/10 transition-transform hover:scale-105">
+            VIEW MISSIONS
+          </Link>
         </div>
 
-        {/* Decorative background element */}
-        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-50"></div>
-      </section>
-
-      {/* Feature Grid */}
-      <section className="py-20 bg-slate-50 border-t border-slate-200">
-        <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-3 gap-12">
-          <div>
-            <div className="text-3xl mb-4">🎯</div>
-            <h3 className="text-xl font-bold mb-2">Curated Missions</h3>
-            <p className="text-slate-600">Hand-picked data entry challenges designed to bridge the gap between student and professional.</p>
-          </div>
-          <div>
-            <div className="text-3xl mb-4">⚡</div>
-            <h3 className="text-xl font-bold mb-2">Timed Assessments</h3>
-            <p className="text-slate-600">Push your limits with our 3-minute high-intensity sprints to build muscle memory and speed.</p>
-          </div>
-          <div>
-            <div className="text-3xl mb-4">📊</div>
-            <h3 className="text-xl font-bold mb-2">Teacher Control</h3>
-            <p className="text-slate-600">The Digital Curator's Workspace allows for real-time management and deployment of assignments.</p>
-          </div>
-        </div>
-      </section>
-    </div>
-    </>
+      </div>
+    </main>
   );
 }

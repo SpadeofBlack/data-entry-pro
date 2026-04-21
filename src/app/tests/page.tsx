@@ -26,7 +26,7 @@ export default function TestsPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main className="min-h-screen bg-background text-foreground transition-colors duration-500">
       <Navbar />
       
       <div className="pt-32 pb-12 px-6 max-w-5xl mx-auto">
