@@ -109,7 +109,7 @@ export default function TestsPage() {
                <ul className="text-xs space-y-3 font-bold text-slate-500 dark:text-zinc-400">
                  <li>• All deployments are final once synced.</li>
                  <li>• Student telemetry is captured in real-time.</li>
-                 <li>• Mission parameters must be C# or Unity focused.</li>
+                 <li>• Mission parameters must be data-entry focused.</li>
                </ul>
             </div>
           </div>
