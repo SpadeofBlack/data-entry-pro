@@ -1,44 +1,41 @@
 "use client";
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase"; // Use the bridge we just made
+import { supabase } from "@/lib/supabase";
 
-export default function TestsPage() {
+export default function ExaminationCenter() {
+  const [isClient, setIsClient] = useState(false);
   const [missions, setMissions] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function loadMissions() {
-      const { data, error } = await supabase
-        .from('missions') // Make sure your table in Supabase is named 'missions'
-        .select('*');
-
+    setIsClient(true); // Tells React we are safely on the client side
+    
+    async function getMissions() {
+      const { data } = await supabase.from('missions').select('*');
       if (data) setMissions(data);
-      setLoading(false);
     }
-    loadMissions();
+    
+    getMissions();
   }, []);
 
+  // Prevent rendering until the client is ready
+  if (!isClient) return null;
+
   return (
-    <div className="p-8">
-      <h1 className="text-4xl font-black italic mb-8">EXAMINATION CENTER</h1>
+    <main className="p-12">
+      <h1 className="text-6xl font-black italic uppercase tracking-tighter mb-12">
+        Examination Center
+      </h1>
       
-      {loading ? (
-        <p className="animate-pulse font-mono">LOADING DATA ARCHIVES...</p>
-      ) : (
-        <div className="grid gap-4">
-          {missions.map((mission) => (
-            <div key={mission.id} className="p-6 bg-slate-50 dark:bg-zinc-900 rounded-3xl border border-slate-200 dark:border-white/5 flex justify-between items-center">
-              <div>
-                <p className="font-black text-lg uppercase">{mission.title}</p>
-                <p className="text-[10px] font-mono opacity-50">{mission.difficulty}</p>
-              </div>
-              <button className="bg-slate-900 dark:bg-white text-white dark:text-black px-6 py-2 rounded-xl font-black text-xs uppercase">
-                Start Mission
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+      <div className="grid gap-6">
+        {missions.map((mission) => (
+          <div key={mission.id} className="p-8 border rounded-[2rem] flex justify-between items-center shadow-xl">
+            <span className="font-bold text-xl">{mission.title}</span>
+            <button className="bg-black text-white px-8 py-3 rounded-2xl font-black uppercase text-xs">
+              Start Test
+            </button>
+          </div>
+        ))}
+      </div>
+    </main>
   );
 }
