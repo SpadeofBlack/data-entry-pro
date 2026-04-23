@@ -10,7 +10,8 @@ export default function ExaminationCenter() {
     setIsClient(true); // Tells React we are safely on the client side
     
     async function getMissions() {
-      const { data } = await supabase.from('missions').select('*');
+      const { data, error } = await supabase.from('missions').select('*');
+      if (error) console.error("Error fetching:", error);
       if (data) setMissions(data);
     }
     
