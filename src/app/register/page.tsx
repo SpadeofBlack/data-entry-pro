@@ -38,12 +38,14 @@ return (
   <input placeholder="First Name" onChange={(e) => setFirstName(e.target.value)} className="p-3 bg-slate-100 rounded-lg" />
   <input placeholder="Middle Name" onChange={(e) => setMiddleName(e.target.value)} className="p-3 bg-slate-100 rounded-lg" />
   <input placeholder="Last Name" onChange={(e) => setLastName(e.target.value)} className="p-3 bg-slate-100 rounded-lg" />
+<div className='col-span-3'>
 <button 
   onClick={handleRegister}
   className="w-full bg-blue-600 text-white p-4 rounded-lg font-bold"
 >
   Complete Registration
 </button>
+</div>
 </div>
 );
 };
