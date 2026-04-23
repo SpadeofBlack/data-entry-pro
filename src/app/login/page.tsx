@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Navbar from "@/components/Navbar"; // Ensure you have the Navbar imported
+import { supabase } from "@/lib/supabase";
 
 export default function AuthPage() {
   const [activeTab, setActiveTab] = useState("login");
@@ -12,7 +13,7 @@ export default function AuthPage() {
     confirm: ""
   });
 
-  const handleAuth = () => {
+  const handleAuth = async() => {
     if (activeTab === "register" && regData.password !== regData.confirm) {
       alert("Passwords do not match!");
       return;
