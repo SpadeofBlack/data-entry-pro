@@ -7,12 +7,12 @@ export default function Navbar() {
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    // Check current session on load
+    // 1. Check for an existing session immediately
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
     });
 
-    // Listen for login/logout changes
+    // 2. Listen for login/logout changes automatically
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
@@ -20,12 +20,17 @@ export default function Navbar() {
     return () => subscription.unsubscribe();
   }, []);
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = "/"; // Send them back to login after logging out
+  };
+
   return (
     <nav className="flex items-center justify-between p-6 bg-white dark:bg-zinc-950 border-b dark:border-white/5">
       <div className="text-2xl font-black text-blue-600 italic">FOKEL ACADEMY</div>
       
       <div className="flex items-center gap-8">
-        {/* Only show these if a user is logged in */}
+        {/* ONLY show these links if "user" is NOT null */}
         {user && (
           <>
             <Link href="/assignments" className="font-bold text-slate-600 dark:text-zinc-400 hover:text-blue-600">MISSIONS</Link>
@@ -38,10 +43,11 @@ export default function Navbar() {
           MOON MODE
         </button>
 
+        {/* Show Logout button only when logged in */}
         {user && (
           <button 
-            onClick={() => supabase.auth.signOut()}
-            className="text-xs font-bold text-red-500"
+            onClick={handleLogout}
+            className="text-xs font-bold text-red-500 hover:underline"
           >
             LOGOUT
           </button>
