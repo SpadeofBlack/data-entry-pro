@@ -46,17 +46,8 @@ export default function AuthPage() {
       } else {
         window.location.href = "/tests"; // Student Page
       }
-    // 1. SAVE THE ROLE (This is the missing step!)
-  // We use "teacher" to match your Dashboard's protection logic
-  const roleValue = accountType === "admin" ? "teacher" : "student";
-  localStorage.setItem("userRole", roleValue);
+    }  
 
-  // 2. REDIRECT
-  // Ensure the admin path matches your actual folder name (dashboard)
-  if (accountType === "admin") {
-    window.location.href = "/dashboard";
-  } else {
-    window.location.href = "/dashboard"; // Or wherever students go
   }
 };
 
@@ -158,5 +149,3 @@ export default function AuthPage() {
     </main>
   );
   }
-}
-}
