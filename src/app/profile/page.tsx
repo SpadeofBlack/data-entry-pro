@@ -1,8 +1,24 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react"; // Added useEffect here
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 import Navbar from "@/components/Navbar";
 
 export default function ProfilePage() {
+  const router = useRouter();
+  
+  // 1. THE BOUNCER: Check for session on mount
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        // No session found? Boot them back to the login page
+        router.push("/"); 
+      }
+    };
+    checkUser();
+  }, [router]);
+
   const [user] = useState({
     firstName: "Idali",
     lastName: "Cooper",
@@ -29,7 +45,7 @@ export default function ProfilePage() {
           {/* LEFT COLUMN: IDENTITY & SKILLS */}
           <div className="md:col-span-2 space-y-8">
             
-            {/* Identity Details - Now Light/Dark Responsive */}
+            {/* Identity Details */}
             <section className="bg-slate-50 border border-slate-200 shadow-sm 
                                 dark:bg-zinc-900 dark:border-white/5 dark:shadow-none 
                                 p-8 rounded-[2rem] transition-all">
@@ -52,7 +68,7 @@ export default function ProfilePage() {
               </div>
             </section>
 
-            {/* Technical Stack - (Your Corrected Section) */}
+            {/* Technical Stack */}
             <section className="bg-slate-50 border border-slate-200 shadow-sm 
                                 dark:bg-zinc-900 dark:border-white/5 dark:shadow-none 
                                 p-8 rounded-[2rem] transition-all">
@@ -74,7 +90,7 @@ export default function ProfilePage() {
           {/* RIGHT COLUMN: STATUS */}
           <div className="space-y-8">
             
-            {/* Degree Progress - High Contrast Blue stays consistent */}
+            {/* Degree Progress */}
             <section className="bg-blue-600 p-8 rounded-[2rem] text-white shadow-lg shadow-blue-500/20">
               <h2 className="text-[10px] font-black uppercase tracking-widest mb-4 opacity-80">Degree Progress</h2>
               <p className="text-2xl font-black leading-tight mb-4">{user.degree}</p>
@@ -84,7 +100,7 @@ export default function ProfilePage() {
               </div>
             </section>
 
-            {/* Development Role - Now Light/Dark Responsive */}
+            {/* Development Role */}
             <section className="bg-slate-50 border border-slate-200 shadow-sm 
                                 dark:bg-zinc-900 dark:border-white/5 dark:shadow-none 
                                 p-8 rounded-[2rem] transition-all">

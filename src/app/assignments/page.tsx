@@ -1,10 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation"; // Added for the redirect
+import { supabase } from "@/lib/supabase"; // Added to check session
 import Navbar from "@/components/Navbar";
 import Link from 'next/link';
 
 export default function AssignmentsPage() {
-  const [role, setRole] = useState("");
+  const router = useRouter();
+  const [role, setRole] = useState("student"); // Default to student
   const [assignments, setAssignments] = useState([
     { id: 1, title: "Warm-up: Home Row Basics", type: "Standard Text", difficulty: "Beginner" },
     { id: 2, title: "Level 1: Standard Speed Trial", type: "Standard Text", difficulty: "Beginner" },
@@ -16,9 +19,23 @@ export default function AssignmentsPage() {
   ]);
 
   useEffect(() => {
-    const savedRole = localStorage.getItem('userRole') || "student";
-    setRole(savedRole);
-  }, []);
+    const checkUser = async () => {
+      // 1. Get the current session
+      const { data: { session } } = await supabase.auth.getSession();
+
+      // 2. If no session, kick them back to login
+      if (!session) {
+        router.push("/");
+        return;
+      }
+
+      // 3. Get the role from Supabase metadata instead of localStorage
+      const userRole = session.user.user_metadata?.role || "student";
+      setRole(userRole);
+    };
+
+    checkUser();
+  }, [router]);
 
   const handleUpload = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,12 +49,12 @@ export default function AssignmentsPage() {
         type: "Standard Text",
         difficulty: "Teacher Assigned"
       };
-      // Fixed: Add the new assignment to state so it renders
       setAssignments([newAssignment, ...assignments]);
       titleInput.value = "";
     }
   };
 
+  // Rest of your return statement stays the same...
   return (
     <main className="min-h-screen bg-background text-foreground transition-colors duration-500">
       <Navbar />
