@@ -18,6 +18,34 @@ export default function AuthPage() {
       alert("Passwords do not match!");
       return;
     }
+    if (activeTab === "register") {
+    // Logic for CREATE ACCOUNT
+    const { data, error } = await supabase.auth.signUp({
+      email: regData.email,
+      password: regData.password,
+      options: {
+        data: { role: accountType === "admin" ? "teacher" : "student" }
+      }
+    });
+    if (error) alert(error.message);
+    else alert("Check your email for the confirmation link!");
+  } else {
+    // Logic for INITIALIZE SESSION
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: regData.email,
+      password: regData.password,
+    });
+
+    if (error) {
+      alert("Login failed: " + error.message);
+    } else {
+      // Redirect based on the role we saved during registration
+      const userRole = data.user?.user_metadata?.role;
+      if (userRole === "teacher") {
+        window.location.href = "/dashboard"; // Teacher Page
+      } else {
+        window.location.href = "/tests"; // Student Page
+      }
     // 1. SAVE THE ROLE (This is the missing step!)
   // We use "teacher" to match your Dashboard's protection logic
   const roleValue = accountType === "admin" ? "teacher" : "student";
@@ -129,4 +157,6 @@ export default function AuthPage() {
       </div>
     </main>
   );
+  }
+}
 }
