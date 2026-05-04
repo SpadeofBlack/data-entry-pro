@@ -5,25 +5,31 @@ import Link from "next/link";
 
 export default function Navbar() {
   const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true); // New loading state
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    // 1. AUTH LOGIC: Check current session and listen for changes
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
+    // 1. Theme Check
+    setIsDark(document.documentElement.classList.contains("dark"));
 
+    // 2. Auth Check
+    const initializeAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user ?? null);
+      setLoading(false); // Stop loading once we have an answer
+    };
+
+    initializeAuth();
+
+    // 3. Listen for changes (Login/Logout)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      setLoading(false);
     });
-
-    // 2. THEME LOGIC: Sync state with current HTML class
-    setIsDark(document.documentElement.classList.contains("dark"));
 
     return () => subscription.unsubscribe();
   }, []);
 
-  // Manual Toggle Function
   const toggleTheme = () => {
     if (isDark) {
       document.documentElement.classList.remove("dark");
@@ -46,30 +52,24 @@ export default function Navbar() {
       </div>
       
       <div className="flex items-center gap-8">
-        {/* Protected Links: Only visible if logged in */}
-        {user && (
+        {/* Only show links if we are NOT loading and HAVE a user */}
+        {!loading && user && (
           <>
-            <Link href="/assignments" className="font-bold text-slate-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-yellow-500 transition-colors text-sm">MISSIONS</Link>
-            <Link href="/tests" className="font-bold text-slate-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-yellow-500 transition-colors text-sm">TESTS</Link>
-            <Link href="/profile" className="font-bold text-slate-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-yellow-500 transition-colors text-sm">PROFILE</Link>
+            <Link href="/assignments" className="font-bold text-slate-600 dark:text-zinc-400 hover:text-blue-600 text-sm">MISSIONS</Link>
+            <Link href="/tests" className="font-bold text-slate-600 dark:text-zinc-400 hover:text-blue-600 text-sm">TESTS</Link>
+            <Link href="/profile" className="font-bold text-slate-600 dark:text-zinc-400 hover:text-blue-600 text-sm">PROFILE</Link>
           </>
         )}
+
+        {/* Show a small indicator if still checking session */}
+        {loading && <span className="animate-pulse text-[10px] font-bold text-slate-400 uppercase">Verifying...</span>}
         
-        {/* The Toggle Button */}
-        <button 
-          onClick={toggleTheme}
-          className="px-4 py-2 border rounded-xl font-bold text-[10px] tracking-widest uppercase transition-all
-                     border-slate-200 text-slate-600 hover:bg-slate-50
-                     dark:border-white/10 dark:text-zinc-400 dark:hover:bg-white/5"
-        >
+        <button onClick={toggleTheme} className="px-4 py-2 border rounded-xl font-bold text-[10px] tracking-widest uppercase dark:text-zinc-400">
           {isDark ? "☀️ SUN MODE" : "🌙 MOON MODE"}
         </button>
 
-        {user && (
-          <button 
-            onClick={handleLogout}
-            className="text-[10px] font-black text-red-500 hover:underline uppercase tracking-widest"
-          >
+        {!loading && user && (
+          <button onClick={handleLogout} className="text-[10px] font-black text-red-500 uppercase">
             LOGOUT
           </button>
         )}
