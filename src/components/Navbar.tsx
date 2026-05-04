@@ -2,12 +2,14 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true); // New loading state
   const [isDark, setIsDark] = useState(false);
-
+  const router = useRouter();
+  
   useEffect(() => {
     // 1. Theme Check
     setIsDark(document.documentElement.classList.contains("dark"));
@@ -41,8 +43,19 @@ export default function Navbar() {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    window.location.href = "/";
+    // Clear local state immediately so links vanish instantly
+     setUser(null);
+
+     // Kill the session in Supabase
+  const { error } = await supabase.auth.signOut();
+  
+  if (error) {
+    console.error("Logout error:", error.message);
+  }
+
+  // Use router.push for a seamless transition back to the login/home page
+  router.push("/");
+
   };
 
   return (
