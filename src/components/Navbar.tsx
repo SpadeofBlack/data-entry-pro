@@ -57,6 +57,7 @@ export default function Navbar() {
       <div className="flex items-center gap-8">
         {!loading && user && (
           <>
+            <Link href="/dashboard" className="font-bold text-blue-600 border-b-2 border-blue-600 pb-1 text-sm">DASHBOARD</Link>
             <Link href="/assignments" className="font-bold text-slate-600 dark:text-zinc-400 hover:text-blue-600 text-sm">MISSIONS</Link>
             <Link href="/tests" className="font-bold text-slate-600 dark:text-zinc-400 hover:text-blue-600 text-sm">TESTS</Link>
             <Link href="/profile" className="font-bold text-slate-600 dark:text-zinc-400 hover:text-blue-600 text-sm">PROFILE</Link>
