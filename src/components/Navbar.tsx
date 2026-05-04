@@ -45,7 +45,7 @@ export default function Navbar() {
     setLoading(true);
     await supabase.auth.signOut();
     setUser(null);
-    router.push("/");
+    router.push("/login");
   };
 
   return (
